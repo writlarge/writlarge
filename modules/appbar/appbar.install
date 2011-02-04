@@ -1,0 +1,123 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ *   Installs the Appbar module.
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function appbar_schema() {
+  $schema = array();
+  $schema['appbar'] = array(
+    'description' => 'Stores alerts for the appbar module.',
+    'fields' => array(
+      'aid' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'description' => 'The Appbar alert ID.',
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The User ID of the user to whom the alert should be shown.',
+      ),
+      'is_new' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The read/unread status of the message. 1 is unread, 0 is read.',
+      ),
+      'created' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The time the alert was recorded.',
+      ),
+      'message' => array(
+        'type' => 'text',
+        'not null' => TRUE,
+        'description' => 'The text of the alert message.',
+      ),
+    ),
+    'indexes' => array(
+      'uid' => array('uid'),
+      'created' => array('created'),
+    ),
+    'primary key' => array('aid'),
+  );
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function appbar_install() {
+  drupal_install_schema('appbar');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function appbar_uninstall() {
+  drupal_uninstall_schema('appbar');
+  db_query("DELETE FROM {variable} WHERE name LIKE 'appbar_block_display_type_%%'");
+  variable_del('appbar_css');
+  variable_del('appbar_min');
+  variable_del('appbar_time');
+  variable_del('appbar_uid1');
+  variable_del('appbar_view');
+  variable_del('appbar_filter');
+  variable_del('appbar_hijack');
+  variable_del('appbar_page_vis');
+  variable_del('appbar_user_vis');
+  variable_del('appbar_vis_list');
+  variable_del('appbar_cron_limit');
+  variable_del('appbar_use_alerts');
+  variable_del('appbar_cron_cleanup');
+}
+
+/**
+ * Implementation of hook_update_N().
+ */
+function appbar_update_6200() {
+  $ret = array();
+  db_drop_primary_key($ret, 'appbar');
+  db_change_field($ret, 'appbar', 'tid', 'aid', array(
+      'type' => 'serial',
+      'not null' => TRUE,
+      'unsigned' => TRUE,
+      'description' => 'The Appbar alert ID.',
+    ),
+    array(
+      'primary key' => array('aid'),
+    )
+  );
+  db_change_field($ret, 'appbar', 'status', 'is_new', array(
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+    'default' => 0,
+    'description' => 'The read/unread status of the message. 1 is unread, 0 is read.',
+  ));
+  db_change_field($ret, 'appbar', 'alert_time', 'created', array(
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+      'default' => 0,
+      'description' => 'The time the alert was recorded.',
+    ),
+    array(
+      'indexes' => array('created' => array('created')),
+    )
+  );
+  db_drop_field($ret, 'appbar', 'identifier');
+  return $ret;
+}

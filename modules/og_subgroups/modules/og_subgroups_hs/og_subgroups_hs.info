@@ -1,0 +1,13 @@
+; $Id: og_subgroups_hs.info,v 1.1.2.2 2011/01/13 21:35:33 bschilt Exp $
+name = Hierarchical Select for Subgroups
+description = Use Hierarchical Select for selecting the parent group.
+dependencies[] = hierarchical_select
+dependencies[] = og_subgroups
+package = Form Elements
+core = 6.x
+; Information added by drupal.org packaging script on January 1, 1970 - 00:00
+version = "6.x-1.x-dev"
+core = "6.x"
+project = "og_subgroups"
+datestamp = "1296519999"
+

@@ -1,0 +1,67 @@
+CONTRIBUTED MODULE PATCHLOG
+=========================================
+
+CHART
+---------------
+Issue: http://drupal.org/node/594202
+Fix: http://drupal.org/node/594202#comment-3943160
+
+
+EDITABLEFIELDS
+---------------
+Issue: http://drupal.org/node/777870
+Fix: http://drupal.org/node/777870
+
+
+ORGANIC GROUPS
+--------------
+Issue: http://drupal.org/node/333072
+Fix: http://drupal.org/node/333072#comment-3264980
+
+
+OG AGGREGATOR
+--------------
+Issue: http://drupal.org/node/768958
+Fix: http://drupal.org/node/768958#comment-3265046
+
+Issue: http://drupal.org/node/854246
+Fix: http://drupal.org/node/854246#comment-3265018
+
+Issue: http://drupal.org/node/854248
+Fix: http://drupal.org/node/854248#comment-3265000
+
+
+USER BADGES
+------------
+Issues: http://drupal.org/node/964546
+Fix: http://drupal.org/node/964546#comment-3976062
+
+
+USERPOINTS
+------------
+Issue: http://drupal.org/node/362119  
+Fix: http://drupal.org/node/362119#comment-2324880
+
+
+USERPOINTS_NC
+--------------
+Issue: http://drupal.org/node/875140
+Fix: http://drupal.org/node/875140#comment-3859230
+
+
+USER TERMS
+--------------
+Issue: http://drupal.org/node/617088
+Fix: http://drupal.org/node/617088#comment-2901188
+
+
+VIEWS
+--------------
+Issue: http://drupal.org/node/571234
+Fix: http://drupal.org/node/571234#comment-3122678
+
+
+WYSIWYG
+--------------
+Issue: http://drupal.org/node/775972
+Fix: http://drupal.org/node/775972#comment-2886200

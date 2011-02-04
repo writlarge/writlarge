@@ -1,0 +1,92 @@
+#site-name a {
+  color: #2f3833;
+  font-family: 'Courier New',Courier,Monospace;
+  font-weight: 800;
+  text-decoration: none;
+  border-left-width: 0px;
+  font-size: 42px;
+}
+
+#header-group-inner {
+  background-color: transparent;
+}
+
+#right-background {
+  background-image: none;
+  background-color: #b5e084;
+}
+
+#left-background {
+  background-image: none;
+  background-color: transparent;
+}
+
+#page-inner {
+  background-color: transparent;
+}
+
+#logo {
+  margin-top: 0px;
+}
+
+#header-site-info {
+  margin-bottom: 0px;
+}
+
+.field-content a {
+  font-size: 14px;
+}
+
+a {
+  border-left-width: 0px;
+}
+
+#site-name-wrapper {
+  margin-left: 40px;
+  border-top-width: 0px;
+  margin-top: 0px;
+}
+
+#header-region-inner {
+  margin-left: 0px;
+}
+
+#content-inner-inner h1 {
+  color: #233647;
+}
+
+#page {
+  background-color: #b5e084;
+}
+
+.front .pane-custom.pane-1 .inner h2.pane-title {
+  font-size: 1.4em;
+}
+
+.front .panel-panel .block .inner h2.pane-title,
+.front .panel-pane .inner h2.pane-title,
+.front .panel-panel .block .inner h2.block-title,
+.front .panel-pane .inner h2.block-title,
+.front .panel-panel .pane-node-content .node {
+  border-top: none;
+  font-size: 1.2em;
+  font-weight: normal;
+}
+
+.front .pane-content a.intro-morebutton,
+.front .pane-content .intro-textblock h3 {
+  font-size: 1em;
+}
+
+.primary-menu-inner ul.sf-menu a,
+.primary-menu-inner ul.sf-menu a:visited {
+  font-size: 1em;
+}
+
+#site-name a:link,
+#site-name a:visited,
+#site-name a:hover,
+#site-name a:active {
+  letter-spacing: 4px;
+}
+

@@ -1,0 +1,8 @@
+backups/*
+tmp/*
+files/*
+sites/default/settings.php
+*~
+\#*
+.#*
+

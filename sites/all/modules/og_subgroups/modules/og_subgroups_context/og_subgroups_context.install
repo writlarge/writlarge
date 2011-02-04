@@ -1,0 +1,15 @@
+<?php
+// $Id: og_subgroups_context.install,v 1.1.2.1 2010/11/03 02:23:38 bschilt Exp $
+
+/**
+ * @file
+ * Install file for the og_subgroups_context module.
+ */ 
+
+/**
+ * Implementation of hook_enable().
+ */
+function og_subgroups_context_enable() {
+  context_invalidate_cache();
+}
+
