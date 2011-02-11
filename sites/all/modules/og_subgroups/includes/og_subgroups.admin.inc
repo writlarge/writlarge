@@ -1,5 +1,5 @@
 <?php
-// $Id: og_subgroups.admin.inc,v 1.1.2.1 2011/01/14 17:59:54 bschilt Exp $
+// $Id: og_subgroups.admin.inc,v 1.1.2.2 2011/01/31 14:44:08 bschilt Exp $
 
 /**
  * @file
@@ -19,7 +19,7 @@ function og_subgroups_settings() {
   $form['propagte_content']['og_subgroups_propagate_content'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Content propagation'),
-    '#description' => t('Set the propogation type for posts which are group posts.'),
+    '#description' => t('Set the propagation type for posts which are group posts.'),
     '#options' => array(
       'up' => t('Parents'),
       'down' => t('Children'),
@@ -36,7 +36,7 @@ function og_subgroups_settings() {
   $form['propagte_user']['og_subgroups_propagate_members'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Subscribing Members'),
-    '#description' => t('Set the propogation type for group members (non-admin).'),
+    '#description' => t('Set the propagation type for group members (non-admin).'),
     '#options' => array(
       'up' => t('Parents'),
       'down' => t('Children'),
@@ -47,7 +47,7 @@ function og_subgroups_settings() {
   $form['propagte_user']['og_subgroups_propagate_members_unsubscribe'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Unsubscribing Members'),
-    '#description' => t('Set the propogation type for group members (non-admin).'),
+    '#description' => t('Set the propagation type for group members (non-admin).'),
     '#options' => array(
       'up' => t('Parents'),
       'down' => t('Children'),

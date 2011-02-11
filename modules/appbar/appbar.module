@@ -254,10 +254,11 @@ function theme_appbar_bar($check_vis = TRUE) {
     $block_list = block_list('appbar');
   }
   $blocks = '';
-  foreach ($block_list as $key => $block) {
+  foreach ($block_list as $block) {
     if (!isset($block->content) || !$block->content) {
       continue;
     }
+    $key = $block->module .'_'. $block->delta;
     $display_type = variable_get('appbar_block_display_type_'. $key, 'popup');
     if ($display_type == 'inline') {
       //Title is ignored.

@@ -8,8 +8,8 @@ dependencies[] = chatroom
 
 
 ; Information added by drupal.org packaging script on January 1, 1970 - 00:00
-version = "6.x-2.x-dev"
+version = "6.x-2.13"
 core = "6.x"
 project = "chatroom"
-datestamp = "1296432644"
+datestamp = "1296433344"
 
