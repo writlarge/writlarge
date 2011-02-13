@@ -1,8 +1,4 @@
-backups/*
-tmp/*
-files/*
 sites/default/settings.php
-*~
-\#*
-.#*
+sites/default/files/*
+backups/*
 
