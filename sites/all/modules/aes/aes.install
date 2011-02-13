@@ -1,0 +1,127 @@
+<?php
+// $Id: aes.install,v 1.1.2.1.2.1 2009/10/12 17:11:10 amc Exp $
+
+function aes_requirements($phase) {
+ 
+ $aes_implementations = aes_get_available_aes_implementations();
+ 
+ if ($aes_implementations['mcrypt'] === false && $aes_implementations['phpseclib'] === false) {
+  $requirement_severity = REQUIREMENT_ERROR;
+ }
+ else {
+  $requirement_severity = REQUIREMENT_OK;
+ }
+ 
+ $requirements = array(
+  array(
+  'title' => 'AES encryption implementation',
+  'description' => 'The AES encryption module requires at least one of two things to function: Either the PHP Mcrypt extension has to be installed on the web server. Or the PHP Secure Communications Library (phpseclib) needs to be installed in the AES directory. Check the README.txt for more information.',
+  'severity' => $requirement_severity,
+  ),
+ );
+ 
+ return $requirements;
+}
+
+function aes_get_available_aes_implementations() {
+ 
+ $phpsec_include_path = dirname(__FILE__)."/phpseclib";
+ set_include_path(get_include_path() . PATH_SEPARATOR . $phpsec_include_path);
+ $phpsec_available = true;
+ if (file_exists($phpsec_include_path.'/Crypt/AES.php') === false) {
+  $phpsec_available = false;
+ }
+ else if (is_readable($phpsec_include_path.'/Crypt/AES.php') === false) {
+  $phpsec_available = false;
+ }
+ 
+ 
+ if (extension_loaded("mcrypt")) {
+  $mcrypt_available = true;
+ }
+ else {
+  $mcrypt_available = false;
+ }
+ 
+ return array('mcrypt' => $mcrypt_available, 'phpseclib' => $phpsec_available);
+}
+
+function aes_install() {
+  
+  drupal_install_schema("aes");
+  
+  variable_set("aes_key_storage_method", "Database");
+  variable_set("aes_cipher", "rijndael-128");
+  variable_set("aes_convert", "true");
+  variable_set("aes_viewing_method", "collapsible");
+  
+  $aes_implementations = aes_get_available_aes_implementations();
+  
+  if ($aes_implementations['mcrypt']) {
+   variable_set("aes_implementation", "mcrypt");
+   $install_msg = t("AES installed using the Mcrypt implementation.");
+  }
+  else if ($aes_implementations['phpseclib']) {
+   variable_set("aes_implementation", "phpseclib");
+   $install_msg = t("AES installed using the phpseclib implementation.");
+  }
+  else {
+   //this case shouldn't actually be possible since hook_requirements should stop the installation if there's no implementation
+   variable_set("aes_implementation", "missing");
+   $install_msg = t("AES installed without any implementation!");
+  }
+  
+  drupal_set_message($install_msg);
+}
+
+function aes_update_6100(&$sandbox = NULL) {
+  $aes_implementations = aes_get_available_aes_implementations();
+  
+  if ($aes_implementations['mcrypt']) {
+   variable_set("aes_implementation", "mcrypt");
+  }
+  else if ($aes_implementations['phpseclib']) {
+   variable_set("aes_implementation", "phpseclib");
+  }
+  else {
+   variable_set("aes_implementation", "missing");
+  }
+  
+  return array();
+}
+
+function aes_schema() {
+ 
+ $schema['aes_passwords'] = array(
+  'fields' => array(
+   'uid' => array('type' => 'int', 'unsigned' => true, 'not null' => true, 'default' => 0),
+   'pass' => array('type' => 'varchar', 'length' => 128, 'not null' => true, 'default' => ''),
+   ),
+  'primary key' => array('uid'),
+ );
+ 
+ return $schema;
+}
+
+function aes_uninstall() {
+  //delete keyfile
+  if (variable_get("aes_key_storage_method", "") == "File") {
+    unlink(variable_get("aes_key_path", ""));
+  }
+  
+  drupal_uninstall_schema("aes");
+  
+  //delete variables
+  variable_del("aes_key");
+  variable_del("aes_convert");
+  variable_del("aes_key_storage_method");
+  variable_del("aes_key_path");
+  variable_del("aes_key");
+  variable_del("aes_encryption_iv");
+  variable_del("aes_cipher");
+  variable_del("aes_viewing_method");
+  variable_del("aes_implementation");
+  
+  drupal_set_message(t("AES uninstalled."));
+}
+

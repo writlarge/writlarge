@@ -1,0 +1,14 @@
+; $Id $
+name = Glue CT with OG
+description = Keeps CT projects in sync with OG groups.
+package = "Case Tracker"
+core = 6.x
+dependencies[] = og
+dependencies[] = casetracker
+
+; Information added by drupal.org packaging script on 2010-08-18
+version = "6.x-1.0"
+core = "6.x"
+project = "ctog"
+datestamp = "1282156291"
+

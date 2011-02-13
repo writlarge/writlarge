@@ -1,0 +1,246 @@
+<?php
+// $Id: ctog.module,v 1.1.2.1 2010/08/18 18:25:32 boobaa Exp $
+
+/**
+ * @file
+ * Keeps CT projects in sync with OG groups.
+ */
+
+/**
+ * Implementation of hook_help().
+ */
+function ctog_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+  case 'admin/help#ctog':
+    $output = '<p>'. t('Keeps CT projects in sync with OG groups.') .'</p>';
+    break;
+  }
+  return $output;
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function ctog_menu() {
+  $items = array();
+  $items['ctog/ahah'] = array(
+    'page callback' => 'ctog_ahah',
+    'access callback' => 'ctog_access_ahah',
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Decides if one is eligible for the AHAH callback.
+ */
+function ctog_access_ahah() {
+  global $user;
+  if (isset($user->og_groups) && !empty($user->og_groups)) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/**
+ * AHAH callback to update the list of assignees.
+ *
+ * @param $_POST['casetracker']['pid']
+ *   ID of the Case Tracker project the assignees are needed.
+ * @param $_POST['form_build_id']
+ *   Build ID of the form to be updated in cache.
+ * @param $_POST['form_id']
+ *   ID of the form to be updated in cache.
+ */
+function ctog_ahah() {
+  $assignees = array(t('Unassigned') => t('Unassigned'));
+  $result = db_query('SELECT name FROM {users} u INNER JOIN {og_uid} USING (uid) WHERE nid = %d AND is_active = 1 AND status <> 0 ORDER BY name', $_POST['casetracker']['pid']);
+  while ($name = db_result($result)) {
+    $assignees[$name] = $name;
+  }
+  // Update the cached form (if it's found).
+  $form_state = array('submitted' => FALSE);
+  $form_build_id = $_POST['form_build_id'];
+  if (!$form = form_get_cache($form_build_id, $form_state)) {
+    // Probably hacking attempt, do nothing (for now).
+    drupal_json(FALSE);
+    return;
+  }
+  $form['casetracker']['assign_to']['#options'] = $assignees;
+  form_set_cache($form_build_id, $form, $form_state, TRUE);
+  $form += array(
+    '#post' => $_POST,
+    '#programmed' => FALSE,
+  );
+  // Rebuild the form.
+  $form = form_builder($_POST['form_id'], $form, $form_state);
+  $subform = $form['casetracker']['assign_to'];
+  unset($subform['#prefix'], $subform['#suffix']); // Prevent duplicate wrappers.
+  $subform['#attributes']['class'] = empty($subform['#attributes']['class']) ? 'ahah-new-content' : $subform['#attributes']['class'] .' ahah-new-content';
+  $output = drupal_render($subform);
+  drupal_json(array('status' => TRUE, 'data' => $output));
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function ctog_form_alter(&$form, $form_state, $form_id) {
+  // Make sure that CT case nodes are posted only into one OG group: the one
+  // which is the CT project.
+  // If we want to completely hide the group selection fieldset, we must be
+  // sure that ctog.module has greater weight than og_access.module (see
+  // ctog.install), so this module's hook_form_alter() is triggered AFTER
+  // og_access.module's one.
+  if (isset($form['#node']) && $form_id == $form['#node']->type .'_node_form') {
+    $node = $form['#node'];
+    if (casetracker_is_case($node->type) && og_is_group_post_type($node->type)) {
+      _ctog_form_alter($form);
+      // The OG group membership is governed only by ctog_node_form_submit()
+      // based on the CT project membership. If we 'hide' the OG 'Groups'
+      // fieldset by this line, this is easily done.
+      $form['og_nodeapi']['#type'] = 'value';
+      // Additionally, we have to trick OG a little bit: tell it that the
+      // first OG group/CT project is selected, and reset it in our own submit
+      // handler.
+      if ($form['casetracker']['pid']['#default_value']) {
+        // If CT ships a #default_value (eg. we are on a node/%/edit page),
+        // use that one as CT project / OG group ID - as a rule of thumb.
+        $pid = $form['casetracker']['pid']['#default_value'];
+      }
+      else if (!empty($form['og_nodeapi']['visible']['og_groups']['#default_value'])) {
+        // If CT has not set a project ID for us yet (eg. submitting a new
+        // CT issue / OG group node), but OG set a default (eg. submitting a
+        // new OG group node to a/some specific OG group), use that/first one
+        // as CT project / OG group ID - as a rule of index finger.
+        reset($form['og_nodeapi']['visible']['og_groups']['#default_value']);
+        $pid = each($form['og_nodeapi']['visible']['og_groups']['#default_value']);
+        $pid = $pid['value'];
+        $form['casetracker']['pid']['#default_value'] = $pid;
+      }
+      else {
+        // If there is no sensible default, just use the first OG group listed
+        // as CT project / OG group ID - as the last resort.
+        if (isset($form['casetracker']['pid']['#options'])) {
+          reset($form['casetracker']['pid']['#options']);
+          $pid = each($form['casetracker']['pid']['#options']);
+          $pid = $pid['key'];
+        }
+        else {
+          $pid = $form['casetracker']['pid']['#value'];
+        }
+      }
+      $form['og_nodeapi']['visible']['og_groups']['#default_value'] = array($pid => $pid);
+      $form['og_nodeapi']['visible']['og_groups']['#type'] = 'value';
+      $form['#validate'][] = 'ctog_ctog_form_validate';
+      $form['#submit'][] = 'ctog_node_form_submit';
+    }
+  }
+  if (($form_id == 'comment_form') && isset($form['casetracker'])) {
+    // This one cannot go to hook_form_FORM_ID_alter(), as that one is called
+    // too early, and casetracker.module would overwrite the stuff we are
+    // altering here.
+    _ctog_form_alter($form);
+  }
+}
+
+/**
+ * Additional validate handler for CT & OG (case && group post) node and
+ * comment forms.
+ */
+function ctog_ctog_form_validate($form, &$form_state) {
+  if ($uid = db_result(db_query("SELECT uid FROM {users} WHERE name = '%s' AND status <> 0", $form_state['values']['casetracker']['assign_to']))) {
+    if (!og_is_group_member($form_state['values']['casetracker']['pid'], TRUE, $uid)) {
+      // Ensure that the (new) assignee (if any) is a member of the (new)
+      // project.
+      form_set_error('casetracker][assign_to', t('This user is not a member of the selected group.'));
+    }
+  }
+}
+
+/**
+ * Additional submit handler for CT & OG (case && group post) node.
+ */
+function ctog_node_form_submit($form, &$form_state) {
+  // The OG group selection part of the case/group post node submit form has
+  // been removed by setting it's #type to 'value'. Now we are dealing with
+  // the group selection part of that form by setting the OG group id of the
+  // new node _only_ to it's CT project id, _and_ making it private.
+  foreach ($form_state['values']['og_groups'] as $key => $value) {
+    $form_state['values']['og_groups'][$key] = 0;
+  }
+  $pid = $form_state['values']['casetracker']['pid'];
+  $form_state['values']['og_groups'][$pid] = $pid;
+  $form_state['values']['og_public'] = 0;
+  $to = node_load($pid);
+  watchdog('ctog', '%title has been submitted to %to.', array('%title' => $node->title, '%to' => $to->title));
+}
+
+/**
+ * Implementation of hook_form_comment_form_alter().
+ */
+function ctog_form_comment_form_alter(&$form, $form_state) {
+  $node = isset($form['nid']['#value']) ? node_load($form['nid']['#value']) : NULL;
+  if (!$node) {
+    // Hopefully there is no comment form without a corresponding node, but
+    // bail out early if it's the case. ;)
+    return;
+  }
+  if (casetracker_is_case($node->type) && og_is_group_post_type($node->type)) {
+    $form['#validate'][] = 'ctog_ctog_form_validate';
+    $form['#submit'][] = 'ctog_comment_form_submit';
+  }
+}
+
+/**
+ * Additional submit handler for CT & OG (case && group post) comment.
+ */
+function ctog_comment_form_submit($form, &$form_state) {
+  // $form['casetracker']['pid']['#default_value'] is the old OG group id.
+  // $form_state['values']['casetracker']['pid'] is the new CT project id.
+  // If they differ (ie. CT project id has been changed by this comment), set
+  // the OG group id of the node accordingly.
+  if ($form['casetracker']['pid']['#default_value'] != $form_state['values']['casetracker']['pid']) {
+    $node = $form['#node'];
+    $node->og_groups = array($form_state['values']['casetracker']['pid']);
+    og_save_ancestry($node);
+    $from = node_load($form['casetracker']['pid']['#default_value']);
+    $to = node_load($form_state['values']['casetracker']['pid']);
+    watchdog('ctog', '%title has been moved from %from to %to.', array('%title' => $node->title, '%from' => $from->title, '%to' => $to->title));
+  }
+}
+
+/**
+ * Helper function for form_alters.
+ */
+function _ctog_form_alter(&$form) {
+  if (isset($form['casetracker'])) {
+    // Assignee should be select instead of radios.
+    $form['casetracker']['assign_to']['#type'] = 'select';
+    if (isset($form['casetracker']['pid']['#options'])) {
+      // Add the AHAH magic.
+      $form['casetracker']['pid']['#ahah'] = array(
+        'event' => 'change',
+        'path' => 'ctog/ahah',
+        'wrapper' => 'edit-casetracker-assign-to-wrapper',
+        'method' => 'replace',
+      );
+      reset($form['casetracker']['pid']['#options']);
+      $pid = each($form['casetracker']['pid']['#options']);
+      $pid = $pid['key'];
+    }
+    else {
+      $pid = $form['casetracker']['pid']['#value'];
+    }
+    $pid = !empty($form['casetracker']['pid']['#default_value']) ? $form['casetracker']['pid']['#default_value'] : $pid;
+    // Reset the list of available assignees to members of the selected
+    // project (basically this is what the AHAH callback does, anyway).
+    $assignees = array(t('Unassigned') => t('Unassigned'));
+    $result = db_query('SELECT name FROM {users} u INNER JOIN {og_uid} USING (uid) WHERE nid = %d AND is_active = 1 AND status <> 0 ORDER BY name', $pid);
+    while ($name = db_result($result)) {
+      $assignees[$name] = $name;
+    }
+    $form['casetracker']['assign_to']['#options'] = $assignees;
+  }
+}
+

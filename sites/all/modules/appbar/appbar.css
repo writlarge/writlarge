@@ -1,0 +1,194 @@
+/* $Id$ */
+
+#appbar_container {
+  bottom: 0;
+  display: none;
+  font-size: 11px;
+  height: 25px;
+  padding: 0;
+  position: fixed;
+  right: 0;
+  width: 100%;
+  z-index: 99;
+}
+
+#appbar_sub {
+  display: block;
+  margin-left: 15px;
+  margin-right: 15px;
+  overflow: visible !important;
+  position: relative;
+}
+
+#appbar {
+  background-color: #E5E5E5;
+  border: 1px #B5B5B5 solid;
+  border-bottom: none;
+  display: block;
+  height: 25px;
+  padding: 0;
+  right: 0;
+}
+
+#appbar_messages {
+  background: scroll transparent url("/sites/all/modules/appbar/open.png") no-repeat right center;
+  border-left: 1px #B5B5B5 solid;
+  float: right;
+  height: 25px;
+  margin-right: 4px;
+  padding-right: 16px;
+}
+
+#appbar_alerts {
+  cursor: pointer;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+#appbar_alerts_list {
+  background-color: #FFFFFF;
+  border: 1px #B5B5B5 solid;
+  bottom: 26px;
+  display: none;
+  /*height: 100%;*/
+  margin-bottom: -1px; /* Hide the bottom border. */
+  max-height: 450px;
+  min-height: 100px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0;
+  position: absolute;
+  right: 0;
+  width: 200px;
+  z-index: 50;
+}
+
+#appbar-blocks {
+  border-right: 1px #B5B5B5 solid;
+  float: left;
+  height: 25px;
+}
+
+.appbar-block {
+  border-right: 1px solid #B5B5B5;
+  padding: 0 4px;
+}
+
+.appbar-block.last {
+  border-right: 0 none;
+}
+
+.appbar-block-popup {
+  float: left;
+}
+
+.appbar-block-popup .appbar-block-title {
+  cursor: pointer;
+  line-height: 25px;
+}
+
+.appbar-block-popup .appbar-block-content {
+  background-color: #FFFFFF;
+  border: 1px #B5B5B5 solid;
+  bottom: 25px;
+  display: none;
+  margin-bottom: -1px;
+  max-height: 450px;
+  min-height: 25px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: fixed;
+  width: 200px;
+  z-index: 51;
+}
+
+.appbar-block-controls {
+  background-color: #E5E5E5;
+  border-bottom: 1px #B5B5B5 solid;
+  height: 20px;
+  line-height: 20px;
+}
+
+.appbar-block-configure {
+  display: none;
+  font-size: 80%;
+  padding: 0 0.5em;
+}
+
+.appbar-minimize {
+  cursor: pointer;
+  float: right;
+  font-size: 20px;
+  padding: 0 4px;
+}
+
+div.appbar-block-inline {
+  display: inline;
+  line-height: 25px;
+}
+
+.appbar-block-inline p {
+  border: 0 none;
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+
+.appbar-block-inline ul.menu,
+.appbar-block-inline .item-list ul {
+  border: 0 none;
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+
+.appbar-block-inline ul li,
+.appbar-block-inline ul.menu li,
+.appbar-block-inline .item-list ul li,
+.appbar-block-inline li.leaf {
+  background: transparent none;
+  border: 0 none;
+  border-right: 1px #B5B5B5 dotted;
+  display: inline;
+  float: left;
+  margin: 0;
+  padding: 0 4px;
+}
+
+.appbar-block-inline ul li.last,
+.appbar-block-inline ul.menu li.last,
+.appbar-block-inline .item-list ul li.last,
+.appbar-block-inline li.leaf.last {
+  border-right: 0 none;
+  padding-right: 0;
+}
+
+#appbar .views-hide {
+  display: none;
+}
+
+.appbar_alert {
+  border-bottom: 1px #B5B5B5 solid;
+  padding: 0.5em;
+}
+
+.appbar-alert-first {
+}
+
+.appbar-alert-last {
+  border-bottom: 0 none;
+}
+
+.appbar-new,
+appbar-has-new {
+  background-color: #FFFFCF;
+}
+
+.appbar_time {
+  font-size: 10px;
+  font-style: italic;
+  padding-left: 0.5em;
+}
+
+/** Style the page differently if the Appbar is being shown. **/
+.with-appbar {}

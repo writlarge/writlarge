@@ -1,0 +1,15 @@
+name = Chat Room Appbar integration
+package = Chat
+description = Integrates Chatroom module with the Appbar module
+core = 6.x
+dependencies[] = appbar
+dependencies[] = chatroom
+
+
+
+; Information added by drupal.org packaging script on January 1, 1970 - 00:00
+version = "6.x-2.13"
+core = "6.x"
+project = "chatroom"
+datestamp = "1296433344"
+
