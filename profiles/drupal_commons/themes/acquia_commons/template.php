@@ -22,8 +22,11 @@ function acquia_commons_preprocess_node(&$vars) {
     $author = user_load($vars['node']->uid);
   
     // Author picture
-    $picture = theme_imagecache('user_picture_meta', $author->picture ? $author->picture : variable_get('user_picture_default', ''), $author->name, $author->name);
-    $submitted = ($author->uid && user_access('access user profiles')) ? l($picture, "user/{$author->uid}", array('html' => TRUE)) : $picture;
+    if (theme_get_setting('toggle_node_user_picture')) {
+      $picture = $vars['picture'];
+      unset($vars['picture']);
+      $submitted = ($author->uid && user_access('access user profiles')) ? l($picture, "user/{$author->uid}", array('html' => TRUE)) : $picture;
+    }
     
     // Author information
     $submitted .= '<span class="submitted-by">';
@@ -61,6 +64,26 @@ function acquia_commons_preprocess_node(&$vars) {
 }
 
 /**
+ * Page preprocessing
+ */
+function acquia_commons_preprocess_page(&$vars) {
+  // Format the footer message
+  // We do this here instead of in page.tpl.php because 
+  // we need a formatted message to pass along to the
+  // same theme function as the $footer in order to have
+  // them nested together
+  if (isset($vars['footer_message']) && strlen($vars['footer_message'])) {
+    $markup = '';
+    $markup .= '<div id="footer-message" class="footer-message">';
+    $markup .= '<div id="footer-message-inner" class="footer-message-inner inner">';
+    $markup .= $vars['footer_message'];
+    $markup .= '</div><!-- /footer-message-inner -->';
+    $markup .= '</div><!-- /footer-message -->';
+    $vars['footer_message'] = $markup;
+  }
+}
+
+/**
  * Comment preprocessing
  */
 function acquia_commons_preprocess_comment(&$vars) {
@@ -86,6 +109,25 @@ function acquia_commons_preprocess_comment(&$vars) {
   $submitted_by = '<span class="comment-name">' . theme('username', $vars['comment']) . '</span>';
   $submitted_by .= '<span class="comment-date">' . $ago . '</span>';     // Format date as small, medium, or large
   $vars['submitted'] = $submitted_by;
+  
+  // Picture
+  if (theme_get_setting('toggle_comment_user_picture')) {
+    if (!$vars['comment']->picture && (variable_get('user_picture_default', '') != '')) {
+      $vars['comment']->picture = variable_get('user_picture_default', '');
+    }
+    if ($vars['comment']->picture) { 
+      $picture = theme_imagecache('user_picture_meta', $vars['comment']->picture, $vars['comment']->name, $vars['comment']->name);
+      if (user_access('access user profiles')) {
+        $vars['comment']->picture = l($picture, "user/{$vars['comment']->uid}", array('html' => TRUE));
+      }
+      else {
+        $vars['comment']->picture = $picture; 
+      }
+    }
+  }
+  else {
+    unset($vars['comment']); 
+  }
 }
 
 /**
@@ -209,32 +251,37 @@ function acquia_commons_item_list($items = array(), $title = NULL, $type = 'ul',
       else {
          $data = $item;
       }
-      if(!is_numeric($i)){
-      if (count($children) > 0) {
-        $data .= theme_item_list($children, NULL, $type, $attributes); // Render nested list
+      
+      if (!is_numeric($i)) {
+        if (count($children) > 0) {
+          $data .= theme_item_list($children, NULL, $type, $attributes); // Render nested list
+        }
+        if ($c == $num_items - 1) {
+          $attributes['class'] = empty($attributes['class']) ? 'first' : ($attributes['class'] .' first');
+        }
+        if ($c == 0) {
+          $attributes['class'] = empty($attributes['class']) ? 'last' : ($attributes['class'] .' last');
+        }
+        
+        $attributes['class'] .= ' ' . ($c % 2 ? 'even' : 'odd');
+        $output .= '<li'. drupal_attributes($attributes) .'>'. $data ."</li>\n";
+      } 
+      else {
+        if (count($children) > 0) {
+          $data .= theme_item_list($children, NULL, $type, $attributes); // Render nested list
+        }
+        if ($i == 0) {
+          $attributes['class'] = empty($attributes['class']) ? 'first' : ($attributes['class'] .' first');
+        }
+        if ($i == $num_items - 1) {
+          $attributes['class'] = empty($attributes['class']) ? 'last' : ($attributes['class'] .' last');
+        }
+        
+        $attributes['class'] .= ' ' . ($i % 2 ? 'even' : 'odd');
+        $output .= '<li'. drupal_attributes($attributes) .'>'. $data ."</li>\n";
       }
-      if ($c == $num_items - 1) {
-        $attributes['class'] = empty($attributes['class']) ? 'first' : ($attributes['class'] .' first');
-      }
-      if ($c == 0) {
-        $attributes['class'] = empty($attributes['class']) ? 'last' : ($attributes['class'] .' last');
-      }
-      $attributes['class'] = $attributes['class'].' ' . ($c % 2 ? 'even' : 'odd');
-      $output .= '<li'. drupal_attributes($attributes) .'>'. $data ."</li>\n";
-      } else {
-      if (count($children) > 0) {
-        $data .= theme_item_list($children, NULL, $type, $attributes); // Render nested list
-      }
-      if ($i == 0) {
-        $attributes['class'] = empty($attributes['class']) ? 'first' : ($attributes['class'] .' first');
-      }
-      if ($i == $num_items - 1) {
-        $attributes['class'] = empty($attributes['class']) ? 'last' : ($attributes['class'] .' last');
-      }
-      $attributes['class'] = $attributes['class'].' ' . ($i % 2 ? 'even' : 'odd');
-      $output .= '<li'. drupal_attributes($attributes) .'>'. $data ."</li>\n";
     }
-    }
+    
     $output .= "</$type>";
   }
   $output .= '</div>';

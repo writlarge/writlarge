@@ -31,9 +31,11 @@ function commons_notifications_strongarm() {
   $strongarm->api_version = 1;
   $strongarm->name = 'notifications_content_type';
   $strongarm->value = array(
+    'grouptype' => 'grouptype',
     'thread' => 'thread',
     'nodetype' => 'nodetype',
     'author' => 'author',
+    'typeauthor' => 0,
   );
 
   $export['notifications_content_type'] = $strongarm;
@@ -98,6 +100,7 @@ function commons_notifications_strongarm() {
     'nodetype' => 'nodetype',
     'author' => 'author',
     'typeauthor' => 0,
+    'grouptype' => 'grouptype',
   );
 
   $export['notifications_ui_types'] = $strongarm;

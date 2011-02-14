@@ -6,7 +6,7 @@
 
 body {
 	color: #1f1f1f;
-	font-family: Tahoma, Verdana, sans-serif;
+	font-family: "Helvetical Neue",Helvetica,Arial,Sans-serif;
 	font-size: 75%;
 	background: #a5a5a5 url(../images/body-bg.png) repeat-x 0 0;
 	padding: 0;
@@ -23,7 +23,7 @@ body.cke_show_borders {
 a, 
 a:link,
 a:visited {
-	color: #669acc;
+	color: #5588bb;
 }
 
 /* Hover/active link styles. Don't forget :focus for accessibility */
@@ -35,7 +35,7 @@ a:active {
 }
 
 h1 {
-  font-family: Georgia, Baskerville, times, serif;
+  font-family: Georgia, times, serif;
 	font-size: 3em;
 	font-weight: normal;
 	line-height: 1.1em;
@@ -43,7 +43,7 @@ h1 {
 }
 
 h2 {
-  font-family: Georgia, Baskerville, times, serif;
+  font-family: Georgia, times, serif;
 	font-size: 1.6em;
 	font-weight: normal;
 	margin: 18px 0;
@@ -149,9 +149,10 @@ body {
 /* Link and hover styles for site name */
 
 #site-name {
-	font-size: 300%;
+	font-size: 35px;
 	line-height: 150%;
 	margin-top: 20px;
+  font-family: Georgia, times, serif;
 }
 
 #site-name-wrapper {
@@ -197,8 +198,7 @@ body {
 
 .header-group,
 .main,
-.footer,
-.footer-message {
+.footer {
 	background-color: #fff;
 	position: relative;
 	z-index: 2;
@@ -394,7 +394,8 @@ body {
 	background-color: transparent;
 	border-right: 1px solid #888;
 	color: #fff;
-	font-size: 1.2em;
+	font-size: 15px;
+  font-family: Georgia, times, serif;
 	font-weight: normal;
 	line-height: 1.4em;
 	padding: 6px 12px;
@@ -701,7 +702,7 @@ body {
 }
 
 .footer-message-inner {
-	
+	padding: 15px;
 }
 
 .footer-message-text {
@@ -748,7 +749,7 @@ body {
 
 h1.title {
 	color: #6091bf;
-	font-size: 3em;
+	font-size: 35px;
 	font-weight: normal;
 	line-height: 1.2em;
 	margin: 0 0 .2em 0;
@@ -1216,11 +1217,15 @@ ul.pager {
 	margin: 0;
 	padding: 2px 4px;
 	text-indent: 0;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
 }
 
 ul.pager a,
 ul.pager li.pager-current {
 	border-color: #333;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
 }
 
 ul.pager li.pager-current {
@@ -1245,7 +1250,7 @@ form input.form-submit,
 	background-color: #6699cc;
 	border: 1px solid #868686;
 	color: #fff;
-	font-family: inherit;
+	font-family: Georgia, times, serif;
 	font-size: 14px;
 	font-weight: normal;
 	height: 24px;
@@ -1295,10 +1300,13 @@ fieldset {
 	overflow: hidden;
 	background-color: #f8f8f8;
 	border: 1px solid #ccc;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
 }
 
 html.js fieldset.collapsed {
 	background-color: transparent;
+  padding: 0 5px;
 }
 
 /* Typography and spacing for legend of fieldsets */
@@ -1331,10 +1339,6 @@ html.js fieldset.collapsed legend a:visited {
 }
 
 /* Tables-------------------------------------------------------------- */
-
-table {
-	font-family: Tahoma, Verdana, sans-serif;
-}
 
 /* Body of tables */
 
@@ -1444,7 +1448,7 @@ div.comment h3.title {
 	position: relative;
 	width: auto;
 	z-index: 10;
-	padding: 0 10px 0 0;
+	padding: 0 20px 0 0;
   text-align: center;
   margin-right: -2px;
 }
@@ -2027,6 +2031,8 @@ input.list-add-to-cart:focus {
 	line-height: 1.2em;
 	margin: 0px;
 	padding: 3px 8px;
+  -moz-border-radius: 7px 7px 0 0;
+  -webkit-border-radius: 7px 7px 0 0;
 }
 
 .sidebar-last .block h2.block-title a,
@@ -2037,6 +2043,8 @@ input.list-add-to-cart:focus {
 .sidebar-last .block .inner,
 .sidebar-first .block .inner {
 	border: 1px solid #dedede;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
 }
 
 .sidebar-first .block .content,
@@ -2415,7 +2423,7 @@ div.shoutbox-even {
 	color: #323232;
 	font-weight: normal;
 	line-height: 1.5em;
-	font-size: 1.3em;
+	font-size: 1.1em;
 	margin: 0px;
 	padding: 3px 8px;
 }
@@ -2435,6 +2443,10 @@ div.shoutbox-even {
 #homebox .homebox-portlet {
   float: none;
   width: auto;
+}
+
+#homebox-buttons button {
+  font-family: inherit;
 }
 
 /* Temporary hack needed until homebox can handle hiding these */
@@ -2850,6 +2862,8 @@ html.js fieldset.views-exposed-form {
 
 html.js fieldset.views-exposed-form.collapsed {
 	background-color: transparent;
+  -moz-border-radius: 0px;
+  -webkit-border-radius: 0px;
 }
 
 .views-exposed-widgets {
@@ -3047,7 +3061,7 @@ div#block-og_views-0 h2.title {
 }
 
 .view-recent-content-all .views-exposed-widget {
-	width: 16%;
+	width: 25%;
 }
 
 .view-AllRecentContent .views-field-title,
@@ -3312,6 +3326,8 @@ a.feed-icon img {
 .view-user-meta {
 	float: right;
 	width: 180px;
+  font-family: "Helvetical Neue",Helvetica,Arial,Sans-serif;
+  margin-top: 10px;
 }
 
 .view-user-meta .views-field-name span {

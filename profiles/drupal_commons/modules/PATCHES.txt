@@ -7,6 +7,12 @@ Issue: http://drupal.org/node/594202
 Fix: http://drupal.org/node/594202#comment-3943160
 
 
+CONTEXT
+---------------
+Issue: http://drupal.org/node/916194
+Fix: http://drupal.org/node/916194#comment-3719526
+
+
 EDITABLEFIELDS
 ---------------
 Issue: http://drupal.org/node/777870
@@ -18,11 +24,17 @@ ORGANIC GROUPS
 Issue: http://drupal.org/node/333072
 Fix: http://drupal.org/node/333072#comment-3264980
 
+Issue: http://drupal.org/node/835030
+Fix: http://drupal.org/node/835030#comment-4007344
+
+Issue: http://drupal.org/node/1051258
+Fix: http://drupal.org/node/1051258
+
 
 OG AGGREGATOR
 --------------
 Issue: http://drupal.org/node/768958
-Fix: http://drupal.org/node/768958#comment-3265046
+Fix: http://drupal.org/node/768958#comment-4034400
 
 Issue: http://drupal.org/node/854246
 Fix: http://drupal.org/node/854246#comment-3265018
@@ -33,14 +45,11 @@ Fix: http://drupal.org/node/854248#comment-3265000
 
 USER BADGES
 ------------
-Issues: http://drupal.org/node/964546
-Fix: http://drupal.org/node/964546#comment-3976062
+Issue: http://drupal.org/node/964546
+Fix: http://drupal.org/node/964546#comment-4001354
 
-
-USERPOINTS
-------------
-Issue: http://drupal.org/node/362119  
-Fix: http://drupal.org/node/362119#comment-2324880
+Issue: http://drupal.org/node/986822
+Fix: http://drupal.org/node/986822#comment-4001216
 
 
 USERPOINTS_NC

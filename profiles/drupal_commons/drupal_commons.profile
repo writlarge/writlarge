@@ -15,9 +15,6 @@ define('DRUPAL_COMMONS_THEME', 'acquia_commons');
  * 
  * To save time during installation, only enable module here that are either
  * required by Features or not included in any Commons features
- * 
- * @see
- *   drupal_commons_enable_features()
  *
  * @return
  *   An array of modules to enable.
@@ -178,9 +175,14 @@ function drupal_commons_profile_tasks(&$task, $url) {
  * Provide a form to choose which features to enable
  */
 function drupal_commons_features_form($form_state, $url) {
+  $form = array();
   drupal_set_title(st('Choose from available features'));
   
-  $form = array();
+  // Homebox, which is included in the Commons dashboard feature
+  // requires PHP 5.2, so we need to check that to avoid allowing
+  // the user to install it
+  module_load_include('module', 'homebox');
+  $php5_2 = _homebox_check_php();
   
   // Help message
   $form['message'] = array(
@@ -265,14 +267,19 @@ function drupal_commons_features_form($form_state, $url) {
   $form['misc']['feature-commons_dashboard'] = array(
     '#type' => 'checkbox',
     '#title' => st('Dashboard'),
-    '#default_value' => 1,
+    '#default_value' => $php5_2 ? 1 : 0,
+    '#disabled' => !$php5_2,
     '#description' => st('A feature that provides a unique-per-user, user-customizable dashboard of recent relevant site activity.'),
   );
+  if (!$php5_2) {
+    $form['misc']['feature-commons_dashboard']['#value'] = 0;
+    $form['misc']['feature-commons_dashboard']['#description'] .= '<span style="color:red;"> ' . st('Your server must have PHP 5.2 or higher in order to active this feature.') . '</span>';
+  }
   $form['misc']['feature-commons_notifications'] = array(
     '#type' => 'checkbox',
     '#title' => st('Notifications'),
     '#default_value' => 1,
-    '#description' => st('Provides a way for group administrators to pull RSS content into a group from other sources.'),
+    '#description' => st('A feature that allows users to subscribe to email & site-based notifications of site activity & new content.'),
   );
   $form['misc']['feature-commons_reputation'] = array(
     '#type' => 'checkbox',
@@ -673,9 +680,19 @@ function drupal_commons_config_heartbeat() {
     foreach ($streams as $key => $value) {
       $streams[$key]['profile'] = 0;
     }
-  
-    variable_set('heartbeat_stream_data', $streams);
   }
+  else {
+    $streams = array(
+      'privateheartbeat' => array(
+        'profile' => 0
+      ), 
+      'publicheartbeat' => array(
+        'profile' => 0
+      )
+    );
+  }
+  
+  variable_set('heartbeat_stream_data', $streams);
 }
 
 /**
@@ -888,7 +905,7 @@ function drupal_commons_create_group() {
     $node->format = 1;
     $node->revision = 0;
     $node->title = st('Jumpstarting our community');
-    $node->body = st('<p>In Drupal Commons, all content is all created within the context of a &quot;Group&quot;. Start exploring how to use your site by:</p><ul><li><a href="/og">Viewing a list of all the groups</a> on this site. (Note: Only this demonstration group exists by default.)</li><li><a href="/node/add/group">Creating a new group</a> of your own. Before you do, you might find an image / graphic for identification use on the group home page. Perhaps a logo, or ..?</li></ul><p>Once you&#39;ve created your group, start building your community by creating various kinds of content. &nbsp;Drupal Commons lets members of a group create:</p><ul><li>Blog posts. These are just what you think: personal notes from individuals. &nbsp;Note that other users can comment on these posts.</li><li>Documents. If you want to store attached documents that are useful for a group, create a Document page, describe the attachment in the body of the page, and then attach the files you want.</li><li>Discussions. &nbsp;A discussion is just that: Somebody starts by creating a page with a thought, idea, or question. Others can then comment on the initial post. Comments are &quot;threaded&quot; so you can comment on a comment.</li><li>Wikis. All the three posts above work the same: The initial author of a blog/document/discussion is the only person who can edit the &quot;body&quot; of the page. In contrast, any member of a group can edit the body of a Wiki page. &nbsp;That&#39;s what makes Wiki pages special - anybody can edit the content.</li><li>Events. If you have a special thing happening on a given day/time, create an &quot;Event&quot; describing it. These events will show up on the Calendar tab of a group home page.</li><li>Group RSS feed. If there is interesting content coming from outside this site that you want your group to track, pull that content in as an RSS feed to the site.</li></ul><p>There&#39;s more to building a community than the technology; it&#39;s the people &amp; participation that makes a community work. This set of content types should give you all the choices you need to jump-start this community.</p>');
+    $node->body = st('<p>In Drupal Commons, all content is all created within the context of a &quot;Group&quot;. Start exploring how to use your site by:</p><ul><li>' . l(t('Viewing a list of all the groups'), 'groups') . ' on this site. (Note: Only this demonstration group exists by default.)</li><li>' . l(t('Creating a new group'), 'node/add/group') . ' of your own. Before you do, you might find an image / graphic for identification use on the group home page. Perhaps a logo, or ..?</li></ul><p>Once you&#39;ve created your group, start building your community by creating various kinds of content. &nbsp;Drupal Commons lets members of a group create:</p><ul><li>Blog posts. These are just what you think: personal notes from individuals. &nbsp;Note that other users can comment on these posts.</li><li>Documents. If you want to store attached documents that are useful for a group, create a Document page, describe the attachment in the body of the page, and then attach the files you want.</li><li>Discussions. &nbsp;A discussion is just that: Somebody starts by creating a page with a thought, idea, or question. Others can then comment on the initial post. Comments are &quot;threaded&quot; so you can comment on a comment.</li><li>Wikis. All the three posts above work the same: The initial author of a blog/document/discussion is the only person who can edit the &quot;body&quot; of the page. In contrast, any member of a group can edit the body of a Wiki page. &nbsp;That&#39;s what makes Wiki pages special - anybody can edit the content.</li><li>Events. If you have a special thing happening on a given day/time, create an &quot;Event&quot; describing it. These events will show up on the Calendar tab of a group home page.</li><li>Group RSS feed. If there is interesting content coming from outside this site that you want your group to track, pull that content in as an RSS feed to the site.</li></ul><p>There&#39;s more to building a community than the technology; it&#39;s the people &amp; participation that makes a community work. This set of content types should give you all the choices you need to jump-start this community.</p>');
     $node->teaser = node_teaser($node->body);
     $node->created = time();
     $node->field_featured_content[0]['value'] = 'Featured';
@@ -963,10 +980,17 @@ function drupal_commons_cleanup() {
 }
 
 /**
- * Alter the install profile configuration form and provide timezone location options.
+ * Alter the install profile configuration
  */
 function system_form_install_configure_form_alter(&$form, $form_state) {
-  // Taken from Open Atrium
+  // Add option to turn on forced login
+  $form['site_information']['commons_force_login'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Force users to login'),
+    '#description' => t('If checked, users will be required to log into the site to access it. Users who are not logged in will be redirected to a login page. Select this setting if your Drupal Commons site must be closed to the public, such as a company intranet.'),
+  );
+  
+  // Add timezone options required by date (Taken from Open Atrium)
   if (function_exists('date_timezone_names') && function_exists('date_timezone_update_site')) {
     $form['server_settings']['date_default_timezone']['#access'] = FALSE;
     $form['server_settings']['#element_validate'] = array('date_timezone_update_site');
@@ -979,4 +1003,14 @@ function system_form_install_configure_form_alter(&$form, $form_state) {
       '#required' => TRUE,
     );
   }
+  
+  // Add an additional submit handler to process the form
+  $form['#submit'][] = 'drupal_commons_install_configure_form_submit';
+}
+
+/**
+ * Submit handler for the installation configure form
+ */
+function drupal_commons_install_configure_form_submit(&$form, &$form_state) {
+  variable_set('commons_force_login', $form_state['values']['commons_force_login']);
 }
